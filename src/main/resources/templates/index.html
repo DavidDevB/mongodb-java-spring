@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BankApp — Tableau de bord</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #0f1117;
+        color: #e2e8f0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ── Header ── */
+      header {
+        background: linear-gradient(135deg, #1a1f2e 0%, #16213e 100%);
+        border-bottom: 1px solid #2d3748;
+        padding: 1.5rem 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      header .logo {
+        width: 42px;
+        height: 42px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+      }
+      header h1 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+      }
+      header span {
+        font-size: 0.85rem;
+        color: #718096;
+        margin-top: 2px;
+        display: block;
+      }
+
+      /* ── Main ── */
+      main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 1rem;
+        gap: 2.5rem;
+      }
+
+      .section-title {
+        text-align: center;
+      }
+      .section-title h2 {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #f7fafc;
+      }
+      .section-title p {
+        margin-top: 0.5rem;
+        color: #718096;
+        font-size: 0.95rem;
+      }
+
+      /* ── Cards ── */
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        width: 100%;
+        max-width: 900px;
+      }
+
+      .card {
+        background: #1a1f2e;
+        border: 1px solid #2d3748;
+        border-radius: 16px;
+        padding: 2rem 1.5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+        transition:
+          transform 0.2s,
+          border-color 0.2s,
+          box-shadow 0.2s;
+        cursor: default;
+      }
+      .card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+      }
+
+      .card.clients {
+        border-top: 3px solid #667eea;
+      }
+      .card.accounts {
+        border-top: 3px solid #48bb78;
+      }
+      .card.ops {
+        border-top: 3px solid #ed8936;
+      }
+
+      .card .icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+      }
+      .card.clients .icon {
+        background: rgba(102, 126, 234, 0.15);
+      }
+      .card.accounts .icon {
+        background: rgba(72, 187, 120, 0.15);
+      }
+      .card.ops .icon {
+        background: rgba(237, 137, 54, 0.15);
+      }
+
+      .card h3 {
+        font-size: 1.15rem;
+        font-weight: 600;
+      }
+      .card p {
+        font-size: 0.85rem;
+        color: #718096;
+        line-height: 1.5;
+        flex: 1;
+      }
+
+      .card-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        width: 100%;
+        margin-top: 0.5rem;
+      }
+
+      .btn {
+        padding: 0.45rem 0.9rem;
+        border-radius: 8px;
+        border: none;
+        font-size: 0.8rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        transition:
+          opacity 0.15s,
+          transform 0.1s;
+      }
+      .btn:hover {
+        opacity: 0.85;
+        transform: scale(1.03);
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+
+      /* couleurs par section */
+      .card.clients .btn-primary {
+        background: #667eea;
+        color: #fff;
+      }
+      .card.clients .btn-ghost {
+        background: rgba(102, 126, 234, 0.15);
+        color: #a5b4fc;
+      }
+      .card.clients .btn-warning {
+        background: rgba(217, 119, 6, 0.18);
+        color: #fbbf24;
+      }
+      .card.clients .btn-danger {
+        background: rgba(229, 62, 62, 0.15);
+        color: #fc8181;
+      }
+
+      .card.accounts .btn-primary {
+        background: #48bb78;
+        color: #fff;
+      }
+      .card.accounts .btn-ghost {
+        background: rgba(72, 187, 120, 0.15);
+        color: #86efac;
+      }
+      .card.accounts .btn-warning {
+        background: rgba(217, 119, 6, 0.18);
+        color: #fbbf24;
+      }
+      .card.accounts .btn-danger {
+        background: rgba(229, 62, 62, 0.15);
+        color: #fc8181;
+      }
+
+      .card.ops .btn-primary {
+        background: #ed8936;
+        color: #fff;
+      }
+      .card.ops .btn-ghost {
+        background: rgba(237, 137, 54, 0.15);
+        color: #fdba74;
+      }
+
+      /* ── Footer ── */
+      footer {
+        text-align: center;
+        padding: 1.2rem;
+        font-size: 0.78rem;
+        color: #4a5568;
+        border-top: 1px solid #2d3748;
+      }
+
+      /* ── Responsive ── */
+      @media (max-width: 700px) {
+        .cards {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">🏦</div>
+      <div>
+        <h1>BankApp</h1>
+        <span>Système de gestion bancaire</span>
+      </div>
+    </header>
+
+    <main>
+      <div class="section-title">
+        <h2>Tableau de bord</h2>
+        <p>Choisissez un module pour commencer</p>
+      </div>
+
+      <div class="cards">
+        <!-- Clients -->
+        <div class="card clients">
+          <div class="icon">👥</div>
+          <h3>Clients</h3>
+          <p>Gérez les clients de la banque : ajout, consultation, modification et suppression.</p>
+          <div class="card-actions">
+            <a th:href="@{/clients}" href="/clients" target="_blank" class="btn btn-primary">Voir tous</a>
+            <a th:href="@{/clients/new}" href="/clients/new" target="_blank" class="btn btn-ghost">+ Ajouter</a>
+            <a th:href="@{/clients/search}" href="/clients/search" target="_blank" class="btn btn-ghost">Rechercher</a>
+            <a th:href="@{/clients/edit}" href="/clients/edit" target="_blank" class="btn btn-warning">✏ Modifier</a>
+            <a th:href="@{/clients/delete}" href="/clients/delete" target="_blank" class="btn btn-danger">🗑 Supprimer</a>
+          </div>
+        </div>
+
+        <!-- Comptes -->
+        <div class="card accounts">
+          <div class="icon">💳</div>
+          <h3>Comptes bancaires</h3>
+          <p>Créez et administrez les comptes : courant, épargne, solde, et statut du compte.</p>
+          <div class="card-actions">
+            <a th:href="@{/accounts}" href="/accounts" target="_blank" class="btn btn-primary">Voir tous</a>
+            <a th:href="@{/accounts/new}" href="/accounts/new" target="_blank" class="btn btn-ghost">+ Ouvrir</a>
+            <a th:href="@{/accounts/search}" href="/accounts/search" target="_blank" class="btn btn-ghost">Rechercher</a>
+            <a th:href="@{/accounts/edit}" href="/accounts/edit" target="_blank" class="btn btn-warning">✏ Modifier</a>
+            <a th:href="@{/accounts/delete}" href="/accounts/delete" target="_blank" class="btn btn-danger">🗑 Supprimer</a>
+          </div>
+        </div>
+
+        <!-- Opérations -->
+        <div class="card ops">
+          <div class="icon">🔄</div>
+          <h3>Opérations</h3>
+          <p>Effectuez des dépôts, retraits et virements, et consultez l'historique complet.</p>
+          <div class="card-actions">
+            <a th:href="@{/operations}" href="/operations" target="_blank" class="btn btn-primary">Historique</a>
+            <a th:href="@{/operations/deposit}" href="/operations/deposit" target="_blank" class="btn btn-ghost"
+              >Dépôt</a
+            >
+            <a th:href="@{/operations/withdraw}" href="/operations/withdraw" target="_blank" class="btn btn-ghost"
+              >Retrait</a
+            >
+            <a th:href="@{/operations/transfer}" href="/operations/transfer" target="_blank" class="btn btn-ghost"
+              >Virement</a
+            >
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>&copy; 2026 BankApp — Spring Boot · MongoDB · Thymeleaf</footer>
+  </body>
+</html>
