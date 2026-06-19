@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Op&eacute;rations — BankApp</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #0f1117;
+        color: #e2e8f0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        background: linear-gradient(135deg, #1a1f2e 0%, #16213e 100%);
+        border-bottom: 1px solid #2d3748;
+        padding: 1.2rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .logo {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+      }
+      header h1 {
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+      .breadcrumb {
+        font-size: 0.8rem;
+        color: #718096;
+      }
+      .breadcrumb a {
+        color: #fdba74;
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      main {
+        flex: 1;
+        padding: 2.5rem 2rem;
+        max-width: 1100px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .page-header h2 {
+        font-size: 1.4rem;
+        font-weight: 600;
+      }
+      .page-header .count {
+        font-size: 0.82rem;
+        color: #718096;
+        margin-top: 0.25rem;
+      }
+
+      /* Boutons d'action rapide */
+      .quick-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      /* Barre de recherche + filtre type */
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+      }
+      .search-wrapper {
+        position: relative;
+        flex: 1;
+        min-width: 200px;
+        max-width: 380px;
+      }
+      .search-icon {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #4a5568;
+        font-size: 0.9rem;
+        pointer-events: none;
+      }
+      .search-input {
+        width: 100%;
+        padding: 0.6rem 1rem 0.6rem 2.5rem;
+        background: #1a1f2e;
+        border: 1px solid #2d3748;
+        border-radius: 8px;
+        color: #e2e8f0;
+        font-size: 0.9rem;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .search-input::placeholder {
+        color: #4a5568;
+      }
+      .search-input:focus {
+        border-color: #ed8936;
+        box-shadow: 0 0 0 3px rgba(237, 137, 54, 0.2);
+      }
+
+      select.filter-select {
+        padding: 0.6rem 0.9rem;
+        background: #1a1f2e;
+        border: 1px solid #2d3748;
+        border-radius: 8px;
+        color: #e2e8f0;
+        font-size: 0.88rem;
+        outline: none;
+        cursor: pointer;
+        transition: border-color 0.2s;
+      }
+      select.filter-select:focus {
+        border-color: #ed8936;
+      }
+
+      .btn {
+        padding: 0.55rem 1.1rem;
+        border-radius: 8px;
+        border: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: opacity 0.15s, transform 0.1s;
+      }
+      .btn:hover {
+        opacity: 0.85;
+        transform: scale(1.02);
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .btn-primary  { background: #ed8936; color: #1a0a00; }
+      .btn-deposit  { background: #0e2e1c; color: #86efac; }
+      .btn-withdraw { background: #2d0a0a; color: #fc8181; }
+      .btn-transfer { background: #1a1231; color: #a78bfa; }
+      .btn-ghost    { background: #16213e; color: #fdba74; }
+
+      /* Table */
+      .table-wrapper {
+        background: #1a1f2e;
+        border: 1px solid #2d3748;
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      thead {
+        background: #16213e;
+        border-bottom: 1px solid #2d3748;
+      }
+      thead th {
+        padding: 0.85rem 1.2rem;
+        text-align: left;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #718096;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      tbody tr {
+        border-bottom: 1px solid #2d3748;
+        transition: background 0.15s;
+      }
+      tbody tr:last-child {
+        border-bottom: none;
+      }
+      tbody tr:hover {
+        background: rgba(237, 137, 54, 0.04);
+      }
+
+      td {
+        padding: 0.95rem 1.2rem;
+        font-size: 0.9rem;
+        vertical-align: middle;
+      }
+
+      /* Badge type */
+      .type-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        border-radius: 6px;
+        padding: 0.25rem 0.65rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+      .type-depot    { background: #0e2e1c; color: #86efac; border: 1px solid #1e4f35; }
+      .type-retrait  { background: #2d0a0a; color: #fc8181; border: 1px solid #5c1a1a; }
+      .type-virement { background: #1a1231; color: #a78bfa; border: 1px solid #2e1f5e; }
+      .type-autre    { background: #1a1f2e; color: #a0aec0; border: 1px solid #2d3748; }
+
+      /* Badge montant */
+      .amount-cell {
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+      .amount-cell.credit { color: #86efac; }
+      .amount-cell.debit  { color: #fc8181; }
+      .amount-cell.neutral{ color: #a78bfa; }
+
+      .td-mono {
+        font-family: "Courier New", monospace;
+        font-size: 0.82rem;
+        color: #a0aec0;
+      }
+      .td-date {
+        color: #718096;
+        font-size: 0.88rem;
+      }
+
+      /* État vide */
+      .empty-state {
+        padding: 4rem 2rem;
+        text-align: center;
+        color: #4a5568;
+      }
+      .empty-state .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+      .empty-state p {
+        font-size: 0.95rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .alert-success {
+        background: #0b2217;
+        border: 1px solid #1e6640;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 0.88rem;
+        color: #86efac;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      footer {
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.78rem;
+        color: #4a5568;
+        border-top: 1px solid #2d3748;
+      }
+
+      @media (max-width: 700px) {
+        main { padding: 1.5rem 1rem; }
+        .search-wrapper { max-width: 100%; }
+        table { display: block; overflow-x: auto; }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <div class="logo">&#127968;</div>
+        <h1>BankApp</h1>
+      </div>
+      <nav class="breadcrumb">
+        <a th:href="@{/}" href="/">Accueil</a> / Op&eacute;rations
+      </nav>
+    </header>
+
+    <main>
+      <div class="alert-success" th:if="${successMessage}">
+        &#10003; <span th:text="${successMessage}">Op&eacute;ration effectu&eacute;e.</span>
+      </div>
+
+      <div class="page-header">
+        <div>
+          <h2>Historique des op&eacute;rations</h2>
+          <p class="count" th:text="${#lists.size(operations)} + ' op&eacute;ration(s) trouv&eacute;e(s)'">0 op&eacute;ration(s)</p>
+        </div>
+        <div class="quick-actions">
+          <a th:href="@{/operations/deposit}"  href="/operations/deposit"  class="btn btn-deposit">&#8659; D&eacute;p&ocirc;t</a>
+          <a th:href="@{/operations/withdraw}" href="/operations/withdraw" class="btn btn-withdraw">&#8657; Retrait</a>
+          <a th:href="@{/operations/transfer}" href="/operations/transfer" class="btn btn-transfer">&#8646; Virement</a>
+        </div>
+      </div>
+
+      <!-- Barre de recherche + filtre par type -->
+      <form class="toolbar" th:action="@{/operations}" method="get">
+        <div class="search-wrapper">
+          <span class="search-icon">&#128269;</span>
+          <input
+            type="text"
+            name="search"
+            class="search-input"
+            placeholder="Rechercher par compte, montant, date..."
+            th:value="${search}"
+            autocomplete="off"
+          />
+        </div>
+
+        <select name="type" class="filter-select">
+          <option value="" th:selected="${type == null or #strings.isEmpty(type)}">Tous les types</option>
+          <option value="DEPOT"    th:selected="${type == 'DEPOT'}">D&eacute;p&ocirc;t</option>
+          <option value="RETRAIT"  th:selected="${type == 'RETRAIT'}">Retrait</option>
+          <option value="VIREMENT" th:selected="${type == 'VIREMENT'}">Virement</option>
+        </select>
+
+        <button type="submit" class="btn btn-primary">Rechercher</button>
+        <a th:if="${(search != null and !#strings.isEmpty(search)) or (type != null and !#strings.isEmpty(type))}"
+           th:href="@{/operations}"
+           href="/operations"
+           class="btn btn-ghost">Effacer</a>
+      </form>
+
+      <div class="table-wrapper">
+
+        <!-- Aucune opération -->
+        <div class="empty-state"
+             th:if="${#lists.isEmpty(operations) and (search == null or #strings.isEmpty(search)) and (type == null or #strings.isEmpty(type))}">
+          <div class="empty-icon">&#128260;</div>
+          <p>Aucune op&eacute;ration enregistr&eacute;e pour le moment.</p>
+          <a th:href="@{/operations/deposit}" href="/operations/deposit" class="btn btn-deposit">&#8659; Premier d&eacute;p&ocirc;t</a>
+        </div>
+
+        <!-- Aucun résultat pour la recherche -->
+        <div class="empty-state"
+             th:if="${#lists.isEmpty(operations) and ((search != null and !#strings.isEmpty(search)) or (type != null and !#strings.isEmpty(type)))}">
+          <div class="empty-icon">&#128269;</div>
+          <p>Aucune op&eacute;ration ne correspond &agrave; votre recherche.</p>
+          <a th:href="@{/operations}" href="/operations" class="btn btn-ghost">Voir toutes les op&eacute;rations</a>
+        </div>
+
+        <table th:if="${!#lists.isEmpty(operations)}">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Montant</th>
+              <th>Compte</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="op : ${operations}">
+              <!-- Type badge -->
+              <td>
+                <span class="type-badge"
+                  th:classappend="
+                    ${op.type == 'DEPOT'}    ? ' type-depot'    :
+                    (${op.type == 'RETRAIT'} ? ' type-retrait'  :
+                    (${op.type == 'VIREMENT'} ? ' type-virement' : ' type-autre'))">
+                  <span th:text="${op.type == 'DEPOT'}    ? '&#8659;' :
+                                  (${op.type == 'RETRAIT'} ? '&#8657;' :
+                                  (${op.type == 'VIREMENT'} ? '&#8646;' : '?'))">&#8646;</span>
+                  <span th:text="${op.type}">TYPE</span>
+                </span>
+              </td>
+
+              <!-- Montant coloré selon le type -->
+              <td>
+                <span class="amount-cell"
+                  th:classappend="
+                    ${op.type == 'DEPOT'}    ? ' credit'  :
+                    (${op.type == 'RETRAIT'} ? ' debit'   : ' neutral')">
+                  <span th:text="${op.type == 'RETRAIT'} ? '- ' : '+ '">+ </span>&#8364;<span th:text="${op.amount}">0.00</span>
+                </span>
+              </td>
+
+              <!-- Numéro de compte -->
+              <td class="td-mono" th:text="${op.accountId}">FR7600000000000</td>
+
+              <!-- Date -->
+              <td class="td-date" th:text="${op.date}">01/01/2026</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <footer>&copy; 2026 BankApp &mdash; Spring Boot &middot; MongoDB &middot; Thymeleaf</footer>
+  </body>
+</html>

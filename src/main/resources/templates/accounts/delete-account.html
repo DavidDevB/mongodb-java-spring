@@ -1,0 +1,295 @@
+<!doctype html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Supprimer un compte — BankApp</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #0f1117;
+        color: #e2e8f0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        background: linear-gradient(135deg, #1a1f2e 0%, #16213e 100%);
+        border-bottom: 1px solid #2d3748;
+        padding: 1.2rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .logo {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+      }
+      header h1 {
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+      .breadcrumb {
+        font-size: 0.8rem;
+        color: #718096;
+      }
+      .breadcrumb a {
+        color: #86efac;
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2.5rem 1rem;
+      }
+
+      .form-card {
+        background: #1a1f2e;
+        border: 1px solid #2d3748;
+        border-top: 3px solid #e53e3e;
+        border-radius: 16px;
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 520px;
+      }
+
+      .card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+      }
+      .card-header .icon {
+        width: 44px;
+        height: 44px;
+        background: rgba(229, 62, 62, 0.15);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+      }
+      .form-card h2 {
+        font-size: 1.3rem;
+        font-weight: 600;
+      }
+      .subtitle {
+        font-size: 0.85rem;
+        color: #718096;
+        margin-bottom: 1.5rem;
+      }
+
+      .alert-danger {
+        background: #2a0d0d;
+        border: 1px solid #6b2727;
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+        font-size: 0.88rem;
+        color: #fc8181;
+        margin-bottom: 1.75rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 0.5rem;
+        line-height: 1.5;
+      }
+
+      .account-info {
+        background: #0f1117;
+        border: 1px solid #2d3748;
+        border-radius: 10px;
+        padding: 1.2rem 1.4rem;
+        margin-bottom: 1.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .info-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .info-label {
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #4a5568;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        min-width: 110px;
+      }
+      .info-value {
+        font-size: 0.95rem;
+        color: #e2e8f0;
+      }
+      .info-value.mono {
+        font-family: "Courier New", monospace;
+        letter-spacing: 0.04em;
+      }
+      .info-value.empty {
+        color: #4a5568;
+        font-style: italic;
+      }
+
+      .balance-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        background: #0e2e1c;
+        color: #86efac;
+        border: 1px solid #1e4f35;
+        border-radius: 6px;
+        padding: 0.2rem 0.6rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+      }
+      .balance-badge.negative {
+        background: #2d0a0a;
+        color: #fc8181;
+        border-color: #5c1a1a;
+      }
+
+      .divider {
+        border: none;
+        border-top: 1px solid #2d3748;
+        margin: 0 0 1.75rem;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+      }
+
+      .btn {
+        padding: 0.6rem 1.3rem;
+        border-radius: 8px;
+        border: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition:
+          opacity 0.15s,
+          transform 0.1s;
+      }
+      .btn:hover {
+        opacity: 0.85;
+        transform: scale(1.02);
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .btn-danger {
+        background: #c53030;
+        color: #fff;
+      }
+      .btn-ghost {
+        background: #0e2e1c;
+        color: #86efac;
+      }
+
+      footer {
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.78rem;
+        color: #4a5568;
+        border-top: 1px solid #2d3748;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <div class="logo">&#127968;</div>
+        <h1>BankApp</h1>
+      </div>
+      <nav class="breadcrumb">
+        <a th:href="@{/}" href="/">Accueil</a> / <a th:href="@{/accounts}" href="/accounts">Comptes bancaires</a> /
+        Supprimer
+      </nav>
+    </header>
+
+    <main>
+      <div class="form-card">
+        <div class="card-header">
+          <div class="icon">&#128465;&#65039;</div>
+          <h2>Supprimer le compte</h2>
+        </div>
+        <p class="subtitle">Cette action est irr&eacute;versible. Veuillez confirmer.</p>
+
+        <div class="alert-danger">
+          &#9888;&nbsp; Le compte et toutes les op&eacute;rations associ&eacute;es seront d&eacute;finitivement
+          supprim&eacute;s.
+        </div>
+
+        <div class="account-info">
+          <div class="info-row">
+            <span class="info-label">N&#176; Compte</span>
+            <span class="info-value mono" th:text="${account.accountNumber}">FR7600000000000</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Solde</span>
+            <span class="balance-badge" th:classappend="${#strings.startsWith(account.balance, '-')} ? ' negative'">
+              &#8364; <span th:text="${account.balance}">0.00</span>
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Date d&#39;ouverture</span>
+            <span
+              class="info-value"
+              th:classappend="${account.openingDate == null} ? 'empty'"
+              th:text="${account.openingDate != null}
+                ? ${#temporals.format(account.openingDate, 'dd/MM/yyyy')}
+                : 'Non renseignee'"
+              >01/01/2026</span
+            >
+          </div>
+          <div class="info-row">
+            <span class="info-label">Client</span>
+            <span class="info-value mono" th:text="${account.clientId}">client-id</span>
+          </div>
+        </div>
+
+        <hr class="divider" />
+
+        <form th:action="@{/accounts/delete/{id}(id=${account.accountNumber})}" method="post">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+          <div class="form-actions">
+            <a th:href="@{/accounts}" href="/accounts" class="btn btn-ghost">Annuler</a>
+            <button type="submit" class="btn btn-danger">&#128465; Confirmer la suppression</button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <footer>&copy; 2026 BankApp &mdash; Spring Boot &middot; MongoDB &middot; Thymeleaf</footer>
+  </body>
+</html>

@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Comptes bancaires — BankApp</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #0f1117;
+        color: #e2e8f0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        background: linear-gradient(135deg, #1a1f2e 0%, #16213e 100%);
+        border-bottom: 1px solid #2d3748;
+        padding: 1.2rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .logo {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+      }
+      header h1 {
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+      .breadcrumb {
+        font-size: 0.8rem;
+        color: #718096;
+      }
+      .breadcrumb a {
+        color: #86efac;
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      main {
+        flex: 1;
+        padding: 2.5rem 2rem;
+        max-width: 1100px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .page-header h2 {
+        font-size: 1.4rem;
+        font-weight: 600;
+      }
+      .page-header .count {
+        font-size: 0.82rem;
+        color: #718096;
+        margin-top: 0.25rem;
+      }
+
+      .search-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+      }
+      .search-wrapper {
+        position: relative;
+        flex: 1;
+        max-width: 420px;
+      }
+      .search-icon {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #4a5568;
+        font-size: 0.9rem;
+        pointer-events: none;
+      }
+      .search-input {
+        width: 100%;
+        padding: 0.6rem 1rem 0.6rem 2.5rem;
+        background: #1a1f2e;
+        border: 1px solid #2d3748;
+        border-radius: 8px;
+        color: #e2e8f0;
+        font-size: 0.9rem;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      .search-input::placeholder {
+        color: #4a5568;
+      }
+      .search-input:focus {
+        border-color: #48bb78;
+        box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.2);
+      }
+
+      .btn {
+        padding: 0.55rem 1.1rem;
+        border-radius: 8px;
+        border: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: opacity 0.15s, transform 0.1s;
+      }
+      .btn:hover {
+        opacity: 0.85;
+        transform: scale(1.02);
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .btn-primary {
+        background: #48bb78;
+        color: #052e16;
+      }
+      .btn-ghost {
+        background: #16213e;
+        color: #86efac;
+      }
+      .btn-warning {
+        background: #2a1e00;
+        color: #fbbf24;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.85rem;
+      }
+      .btn-danger {
+        background: #200a0a;
+        color: #fc8181;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.85rem;
+      }
+
+      .table-wrapper {
+        background: #1a1f2e;
+        border: 1px solid #2d3748;
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      thead {
+        background: #16213e;
+        border-bottom: 1px solid #2d3748;
+      }
+      thead th {
+        padding: 0.85rem 1.2rem;
+        text-align: left;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #718096;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      tbody tr {
+        border-bottom: 1px solid #2d3748;
+        transition: background 0.15s;
+      }
+      tbody tr:last-child {
+        border-bottom: none;
+      }
+      tbody tr:hover {
+        background: rgba(72, 187, 120, 0.05);
+      }
+
+      td {
+        padding: 1rem 1.2rem;
+        font-size: 0.9rem;
+        vertical-align: middle;
+      }
+
+      .td-account {
+        font-weight: 600;
+        color: #f7fafc;
+        font-family: "Courier New", monospace;
+        letter-spacing: 0.04em;
+      }
+      .td-muted {
+        color: #718096;
+        font-style: italic;
+      }
+      .td-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .balance-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: #0e2e1c;
+        color: #86efac;
+        border: 1px solid #1e4f35;
+        border-radius: 6px;
+        padding: 0.25rem 0.65rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+      }
+      .balance-badge.negative {
+        background: #2d0a0a;
+        color: #fc8181;
+        border-color: #5c1a1a;
+      }
+
+      .client-chip {
+        display: inline-block;
+        background: #0f1531;
+        color: #a5b4fc;
+        border: 1px solid #2a3263;
+        border-radius: 5px;
+        padding: 0.2rem 0.55rem;
+        font-size: 0.78rem;
+        font-family: "Courier New", monospace;
+      }
+
+      .empty-state {
+        padding: 4rem 2rem;
+        text-align: center;
+        color: #4a5568;
+      }
+      .empty-state .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+      .empty-state p {
+        font-size: 0.95rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .alert-success {
+        background: #0b2217;
+        border: 1px solid #1e6640;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 0.88rem;
+        color: #86efac;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      footer {
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.78rem;
+        color: #4a5568;
+        border-top: 1px solid #2d3748;
+      }
+
+      @media (max-width: 700px) {
+        main {
+          padding: 1.5rem 1rem;
+        }
+        .search-wrapper {
+          max-width: 100%;
+        }
+        table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <div class="logo">&#127968;</div>
+        <h1>BankApp</h1>
+      </div>
+      <nav class="breadcrumb">
+        <a th:href="@{/}" href="/">Accueil</a> / Comptes bancaires
+      </nav>
+    </header>
+
+    <main>
+      <div class="alert-success" th:if="${successMessage}">
+        &#10003; <span th:text="${successMessage}">Operation reussie.</span>
+      </div>
+
+      <div class="page-header">
+        <div>
+          <h2>Comptes bancaires</h2>
+          <p class="count" th:text="${#lists.size(accounts)} + ' compte(s) trouve(s)'">0 compte(s)</p>
+        </div>
+        <a th:href="@{/accounts/new}" href="/accounts/new" class="btn btn-primary">+ Ouvrir un compte</a>
+      </div>
+
+      <form class="search-bar" th:action="@{/accounts}" method="get">
+        <div class="search-wrapper">
+          <span class="search-icon">&#128269;</span>
+          <input
+            type="text"
+            name="search"
+            id="searchInput"
+            class="search-input"
+            placeholder="Rechercher par numero de compte ou client..."
+            th:value="${search}"
+            autocomplete="off"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Rechercher</button>
+        <a th:if="${search != null and !#strings.isEmpty(search)}"
+           th:href="@{/accounts}"
+           href="/accounts"
+           class="btn btn-ghost">Effacer</a>
+      </form>
+
+      <div class="table-wrapper">
+        <div class="empty-state" th:if="${#lists.isEmpty(accounts) and (search == null or #strings.isEmpty(search))}">
+          <div class="empty-icon">&#128179;</div>
+          <p>Aucun compte bancaire enregistre pour le moment.</p>
+          <a th:href="@{/accounts/new}" href="/accounts/new" class="btn btn-primary">+ Ouvrir le premier compte</a>
+        </div>
+
+        <div class="empty-state" th:if="${#lists.isEmpty(accounts) and search != null and !#strings.isEmpty(search)}">
+          <div class="empty-icon">&#128269;</div>
+          <p th:text="'Aucun compte ne correspond a : ' + ${search}">Aucun resultat.</p>
+          <a th:href="@{/accounts}" href="/accounts" class="btn btn-ghost">Voir tous les comptes</a>
+        </div>
+
+        <table th:if="${!#lists.isEmpty(accounts)}">
+          <thead>
+            <tr>
+              <th>N&#176; Compte</th>
+              <th>Solde</th>
+              <th>Date d&#39;ouverture</th>
+              <th>Client</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="account : ${accounts}">
+              <td class="td-account" th:text="${account.accountNumber}">FR7600000000000</td>
+              <td>
+                <span class="balance-badge" th:classappend="${#strings.startsWith(account.balance, '-')} ? ' negative'">
+                  &#8364; <span th:text="${account.balance}">0.00</span>
+                </span>
+              </td>
+              <td>
+                <span
+                  th:classappend="${account.openingDate == null} ? 'td-muted'"
+                  th:text="${account.openingDate != null}
+                    ? ${#temporals.format(account.openingDate, 'dd/MM/yyyy')}
+                    : 'Non renseignee'"
+                >01/01/2026</span>
+              </td>
+              <td>
+                <span class="client-chip" th:text="${account.clientId}">client-id</span>
+              </td>
+              <td>
+                <div class="td-actions">
+                  <a
+                    th:href="@{/accounts/edit/{id}(id=${account.accountNumber})}"
+                    href="/accounts/edit/1"
+                    class="btn btn-warning"
+                  >Modifier</a>
+                  <a
+                    th:href="@{/accounts/delete/{id}(id=${account.accountNumber})}"
+                    href="/accounts/delete/1"
+                    class="btn btn-danger"
+                  >Supprimer</a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <footer>&copy; 2026 BankApp &mdash; Spring Boot &middot; MongoDB &middot; Thymeleaf</footer>
+  </body>
+</html>

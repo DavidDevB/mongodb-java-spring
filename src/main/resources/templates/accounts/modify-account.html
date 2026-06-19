@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modifier un compte — BankApp</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #0f1117;
+        color: #e2e8f0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        background: linear-gradient(135deg, #1a1f2e 0%, #16213e 100%);
+        border-bottom: 1px solid #2d3748;
+        padding: 1.2rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .logo {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+      }
+      header h1 {
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+      .breadcrumb {
+        font-size: 0.8rem;
+        color: #718096;
+      }
+      .breadcrumb a {
+        color: #86efac;
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      main {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2.5rem 1rem;
+      }
+
+      .form-card {
+        background: #1a1f2e;
+        border: 1px solid #2d3748;
+        border-top: 3px solid #f6ad55;
+        border-radius: 16px;
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 520px;
+      }
+
+      .form-card .card-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 0.5rem;
+      }
+      .form-card .card-header .icon {
+        width: 44px;
+        height: 44px;
+        background: rgba(246, 173, 85, 0.15);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+      }
+      .form-card h2 {
+        font-size: 1.3rem;
+        font-weight: 600;
+      }
+      .form-card .subtitle {
+        font-size: 0.85rem;
+        color: #718096;
+        margin-bottom: 2rem;
+      }
+
+      /* Fiche lecture seule */
+      .readonly-info {
+        background: #0f1117;
+        border: 1px solid #2d3748;
+        border-radius: 10px;
+        padding: 1rem 1.2rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+      }
+      .info-row {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .info-label {
+        font-size: 0.7rem;
+        font-weight: 600;
+        color: #4a5568;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        min-width: 110px;
+      }
+      .info-value {
+        font-size: 0.9rem;
+        color: #a0aec0;
+        font-family: "Courier New", monospace;
+        letter-spacing: 0.03em;
+      }
+
+      .form-group {
+        margin-bottom: 1.3rem;
+      }
+
+      label {
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: #a0aec0;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.45rem;
+      }
+      label .required {
+        color: #fc8181;
+        margin-left: 2px;
+      }
+      label .hint {
+        font-size: 0.7rem;
+        color: #4a5568;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: 0;
+        margin-left: 0.4rem;
+      }
+
+      input[type="text"],
+      input[type="number"] {
+        width: 100%;
+        padding: 0.65rem 1rem;
+        background: #0f1117;
+        border: 1px solid #2d3748;
+        border-radius: 8px;
+        color: #e2e8f0;
+        font-size: 0.95rem;
+        outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+      }
+      input::placeholder {
+        color: #4a5568;
+      }
+      input:focus {
+        border-color: #f6ad55;
+        box-shadow: 0 0 0 3px rgba(246, 173, 85, 0.2);
+      }
+      input.is-error {
+        border-color: #e53e3e;
+      }
+      input.is-error:focus {
+        box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.2);
+      }
+
+      .error-msg {
+        font-size: 0.78rem;
+        color: #fc8181;
+        margin-top: 0.35rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+
+      .divider {
+        border: none;
+        border-top: 1px solid #2d3748;
+        margin: 1.75rem 0;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+      }
+
+      .btn {
+        padding: 0.6rem 1.3rem;
+        border-radius: 8px;
+        border: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition: opacity 0.15s, transform 0.1s;
+      }
+      .btn:hover {
+        opacity: 0.85;
+        transform: scale(1.02);
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .btn-primary {
+        background: #f6ad55;
+        color: #1a1202;
+      }
+      .btn-ghost {
+        background: #0e2e1c;
+        color: #86efac;
+      }
+
+      .alert-success {
+        background: #0b2217;
+        border: 1px solid #1e6640;
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+        font-size: 0.88rem;
+        color: #86efac;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .alert-error {
+        background: #2a0d0d;
+        border: 1px solid #6b2727;
+        border-radius: 10px;
+        padding: 0.85rem 1rem;
+        font-size: 0.88rem;
+        color: #fc8181;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      footer {
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.78rem;
+        color: #4a5568;
+        border-top: 1px solid #2d3748;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <div class="logo">&#127968;</div>
+        <h1>BankApp</h1>
+      </div>
+      <nav class="breadcrumb">
+        <a th:href="@{/}" href="/">Accueil</a> /
+        <a th:href="@{/accounts}" href="/accounts">Comptes bancaires</a> /
+        Modifier
+      </nav>
+    </header>
+
+    <main>
+      <div class="form-card">
+        <div class="card-header">
+          <div class="icon">&#9999;&#65039;</div>
+          <h2>Modifier le compte</h2>
+        </div>
+        <p class="subtitle">Mettez &agrave; jour les informations du compte bancaire.</p>
+
+        <div class="alert-success" th:if="${successMessage}">
+          &#10003; <span th:text="${successMessage}">Modifications enregistr&eacute;es.</span>
+        </div>
+        <div class="alert-error" th:if="${errorMessage}">
+          &#9888; <span th:text="${errorMessage}">Une erreur est survenue.</span>
+        </div>
+
+        <!-- Informations non modifiables -->
+        <div class="readonly-info">
+          <div class="info-row">
+            <span class="info-label">N&#176; Compte</span>
+            <span class="info-value" th:text="${account.accountNumber}">FR7600000000000</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Date d&#39;ouverture</span>
+            <span class="info-value"
+              th:text="${account.openingDate != null}
+                ? ${#temporals.format(account.openingDate, 'dd/MM/yyyy')}
+                : '—'"
+            >01/01/2026</span>
+          </div>
+        </div>
+
+        <form th:action="@{/accounts/edit/{id}(id=${account.accountNumber})}" th:object="${account}" method="post">
+          <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+          <div class="form-group">
+            <label for="balance">
+              Solde <span class="required">*</span>
+              <span class="hint">(ex&nbsp;: 1500.00 ou -200.50)</span>
+            </label>
+            <input
+              type="text"
+              id="balance"
+              th:field="*{balance}"
+              placeholder="0.00"
+              th:classappend="${#fields.hasErrors('balance')} ? 'is-error'"
+              autocomplete="off"
+            />
+            <p class="error-msg" th:if="${#fields.hasErrors('balance')}">
+              &#9888; <span th:errors="*{balance}"></span>
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label for="clientId">
+              Identifiant client <span class="required">*</span>
+            </label>
+            <input
+              type="text"
+              id="clientId"
+              th:field="*{clientId}"
+              placeholder="client-id"
+              th:classappend="${#fields.hasErrors('clientId')} ? 'is-error'"
+              autocomplete="off"
+            />
+            <p class="error-msg" th:if="${#fields.hasErrors('clientId')}">
+              &#9888; <span th:errors="*{clientId}"></span>
+            </p>
+          </div>
+
+          <hr class="divider" />
+
+          <div class="form-actions">
+            <a th:href="@{/accounts}" href="/accounts" class="btn btn-ghost">Annuler</a>
+            <button type="submit" class="btn btn-primary">&#128190; Enregistrer</button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <footer>&copy; 2026 BankApp &mdash; Spring Boot &middot; MongoDB &middot; Thymeleaf</footer>
+  </body>
+</html>

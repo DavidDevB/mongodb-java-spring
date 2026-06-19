@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clients — BankApp</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background: #0f1117;
+        color: #e2e8f0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      header {
+        background: linear-gradient(135deg, #1a1f2e 0%, #16213e 100%);
+        border-bottom: 1px solid #2d3748;
+        padding: 1.2rem 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .logo {
+        width: 36px;
+        height: 36px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+      }
+      header h1 {
+        font-size: 1.1rem;
+        font-weight: 700;
+      }
+      .breadcrumb {
+        font-size: 0.8rem;
+        color: #718096;
+      }
+      .breadcrumb a {
+        color: #a5b4fc;
+        text-decoration: none;
+      }
+      .breadcrumb a:hover {
+        text-decoration: underline;
+      }
+
+      main {
+        flex: 1;
+        padding: 2.5rem 2rem;
+        max-width: 1100px;
+        width: 100%;
+        margin: 0 auto;
+      }
+
+      .page-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+      .page-header h2 {
+        font-size: 1.4rem;
+        font-weight: 600;
+      }
+      .page-header .count {
+        font-size: 0.82rem;
+        color: #718096;
+        margin-top: 0.25rem;
+      }
+
+      /* Barre de recherche */
+      .search-bar {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+      }
+      .search-wrapper {
+        position: relative;
+        flex: 1;
+        max-width: 420px;
+      }
+      .search-icon {
+        position: absolute;
+        left: 0.85rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #4a5568;
+        font-size: 0.9rem;
+        pointer-events: none;
+      }
+      .search-input {
+        width: 100%;
+        padding: 0.6rem 1rem 0.6rem 2.5rem;
+        background: #1a1f2e;
+        border: 1px solid #2d3748;
+        border-radius: 8px;
+        color: #e2e8f0;
+        font-size: 0.9rem;
+        outline: none;
+        transition:
+          border-color 0.2s,
+          box-shadow 0.2s;
+      }
+      .search-input::placeholder {
+        color: #4a5568;
+      }
+      .search-input:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+      }
+
+      .btn {
+        padding: 0.55rem 1.1rem;
+        border-radius: 8px;
+        border: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        transition:
+          opacity 0.15s,
+          transform 0.1s;
+      }
+      .btn:hover {
+        opacity: 0.85;
+        transform: scale(1.02);
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .btn-primary {
+        background: #667eea;
+        color: #fff;
+      }
+      .btn-ghost {
+        background: #16213e;
+        color: #a5b4fc;
+      }
+      .btn-warning {
+        background: #2a1e00;
+        color: #fbbf24;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.85rem;
+      }
+      .btn-danger {
+        background: #200a0a;
+        color: #fc8181;
+        padding: 0.35rem 0.75rem;
+        font-size: 0.85rem;
+      }
+
+      .table-wrapper {
+        background: #1a1f2e;
+        border: 1px solid #2d3748;
+        border-radius: 16px;
+        overflow: hidden;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      thead {
+        background: #16213e;
+        border-bottom: 1px solid #2d3748;
+      }
+      thead th {
+        padding: 0.85rem 1.2rem;
+        text-align: left;
+        font-size: 0.72rem;
+        font-weight: 600;
+        color: #718096;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+      }
+
+      tbody tr {
+        border-bottom: 1px solid #2d3748;
+        transition: background 0.15s;
+      }
+      tbody tr:last-child {
+        border-bottom: none;
+      }
+      tbody tr:hover {
+        background: rgba(102, 126, 234, 0.05);
+      }
+
+      td {
+        padding: 1rem 1.2rem;
+        font-size: 0.9rem;
+        vertical-align: middle;
+      }
+
+      .td-name {
+        font-weight: 600;
+        color: #f7fafc;
+      }
+      .td-muted {
+        color: #718096;
+        font-style: italic;
+      }
+      .td-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .empty-state {
+        padding: 4rem 2rem;
+        text-align: center;
+        color: #4a5568;
+      }
+      .empty-state .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+      .empty-state p {
+        font-size: 0.95rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .alert-success {
+        background: #0b2217;
+        border: 1px solid #1e6640;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        font-size: 0.88rem;
+        color: #86efac;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      footer {
+        text-align: center;
+        padding: 1rem;
+        font-size: 0.78rem;
+        color: #4a5568;
+        border-top: 1px solid #2d3748;
+      }
+
+      @media (max-width: 700px) {
+        main {
+          padding: 1.5rem 1rem;
+        }
+        .search-wrapper {
+          max-width: 100%;
+        }
+        table {
+          display: block;
+          overflow-x: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="brand">
+        <div class="logo">&#127968;</div>
+        <h1>BankApp</h1>
+      </div>
+      <nav class="breadcrumb">
+        <a th:href="@{/}" href="/">Accueil</a> / Clients
+      </nav>
+    </header>
+
+    <main>
+      <div class="alert-success" th:if="${successMessage}">
+        &#10003; <span th:text="${successMessage}">Operation reussie.</span>
+      </div>
+
+      <div class="page-header">
+        <div>
+          <h2>Clients</h2>
+          <p class="count" th:text="${#lists.size(clients)} + ' client(s) trouve(s)'">0 client(s)</p>
+        </div>
+        <a th:href="@{/clients/new}" href="/clients/new" class="btn btn-primary">+ Nouveau client</a>
+      </div>
+
+      <!-- Formulaire de recherche (GET vers /clients?search=...) -->
+      <form class="search-bar" th:action="@{/clients}" method="get">
+        <div class="search-wrapper">
+          <span class="search-icon">&#128269;</span>
+          <input
+            type="text"
+            name="search"
+            id="searchInput"
+            class="search-input"
+            placeholder="Rechercher par nom, prenom, adresse..."
+            th:value="${search}"
+            autocomplete="off"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">Rechercher</button>
+        <a th:if="${search != null and !#strings.isEmpty(search)}"
+           th:href="@{/clients}"
+           href="/clients"
+           class="btn btn-ghost">Effacer</a>
+      </form>
+
+      <div class="table-wrapper">
+        <!-- Aucun client en base -->
+        <div class="empty-state" th:if="${#lists.isEmpty(clients) and (search == null or #strings.isEmpty(search))}">
+          <div class="empty-icon">&#128101;</div>
+          <p>Aucun client enregistre pour le moment.</p>
+          <a th:href="@{/clients/new}" href="/clients/new" class="btn btn-primary">+ Ajouter le premier client</a>
+        </div>
+
+        <!-- Aucun résultat pour la recherche -->
+        <div class="empty-state" th:if="${#lists.isEmpty(clients) and search != null and !#strings.isEmpty(search)}">
+          <div class="empty-icon">&#128269;</div>
+          <p th:text="'Aucun client ne correspond a : ' + ${search}">Aucun resultat.</p>
+          <a th:href="@{/clients}" href="/clients" class="btn btn-ghost">Voir tous les clients</a>
+        </div>
+
+        <table th:if="${!#lists.isEmpty(clients)}">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Prenom</th>
+              <th>Adresse</th>
+              <th>Telephone</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="client : ${clients}">
+              <td class="td-name" th:text="${client.lastname}">Dupont</td>
+              <td th:text="${client.firstname}">Jean</td>
+              <td>
+                <span
+                  th:classappend="${#strings.isEmpty(client.adress)} ? 'td-muted'"
+                  th:text="${#strings.isEmpty(client.adress)} ? 'Non renseignee' : ${client.adress}"
+                >12 rue de la Paix</span>
+              </td>
+              <td>
+                <span
+                  th:classappend="${#strings.isEmpty(client.phoneNumber)} ? 'td-muted'"
+                  th:text="${#strings.isEmpty(client.phoneNumber)} ? 'Non renseigne' : ${client.phoneNumber}"
+                >+33 6 00 00 00 00</span>
+              </td>
+              <td>
+                <div class="td-actions">
+                  <a
+                    th:href="@{/clients/edit/{id}(id=${client.id})}"
+                    href="/clients/edit/1"
+                    class="btn btn-warning"
+                  >Modifier</a>
+                  <a
+                    th:href="@{/clients/delete/{id}(id=${client.id})}"
+                    href="/clients/delete/1"
+                    class="btn btn-danger"
+                  >Supprimer</a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <footer>&copy; 2026 BankApp &mdash; Spring Boot &middot; MongoDB &middot; Thymeleaf</footer>
+  </body>
+</html>
